@@ -103,21 +103,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun determinateConversion(textsViews: Array<EditText>, btnPressed: Button): String {
-        var conversion = ""
+
         textsViews.forEach {
             if (it.text.toString() != "") {
-                when {
-                    it.tag == "txtC" && btnPressed.tag == "btnF" -> conversion = "C_to_F"
-                    it.tag == "txtC" && btnPressed.tag == "btnK" -> conversion = "C_to_K"
-                    it.tag == "txtF" && btnPressed.tag == "btnC" -> conversion = "F_to_C"
-                    it.tag == "txtF" && btnPressed.tag == "btnF" -> conversion = "C_to_K"
-                    it.tag == "txtK" && btnPressed.tag == "btnC" -> conversion = "K_to_C"
-                    it.tag == "txtK" && btnPressed.tag == "F" -> conversion = "K_to_F"
+                return when {
+                    it.tag == "txtC" && btnPressed.tag == "btnF" -> "C_to_F"
+                    it.tag == "txtC" && btnPressed.tag == "btnK" -> "C_to_K"
+                    it.tag == "txtF" && btnPressed.tag == "btnC" ->  "F_to_C"
+                    it.tag == "txtF" && btnPressed.tag == "btnF" -> "C_to_K"
+                    it.tag == "txtK" && btnPressed.tag == "btnC" -> "K_to_C"
+                    it.tag == "txtK" && btnPressed.tag == "btnF" -> "K_to_F"
                     else -> ""
                 }
             }
         }
-        return conversion
+        return ""
     }
 
     private fun setTextWatcher(editText: EditText, actionTextViews: Array<TextView>) {
