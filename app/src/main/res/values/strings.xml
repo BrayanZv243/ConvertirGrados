@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ExamenU1</string>
+    <string name="tittle">Convertidor</string>
+    <string name="gradosC">°C</string>
+    <string name="gradosF">°F</string>
+    <string name="gradosK">°K</string>
+    <string name="description">"Ingrese un número décimal"</string>
+</resources>
