@@ -14,8 +14,6 @@ import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
 
-    var grades: Double = 0.0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -75,18 +73,15 @@ class MainActivity : AppCompatActivity() {
             }
             hideKeyboard()
         }
-
         btnBorrar.setOnClickListener{
             txtF.isEnabled = true
             txtC.isEnabled = true
             txtK.isEnabled = true
-
             txtF.text.clear()
             txtC.text.clear()
             txtK.text.clear()
         }
     }
-
     private fun determinateNumberOfTxtUsed(textsViews: Array<EditText>): Int{
         var count = 0
         textsViews.forEach {
@@ -94,14 +89,12 @@ class MainActivity : AppCompatActivity() {
         }
         return count
     }
-
     private fun getGrades(textsViews: Array<EditText>):Double {
         textsViews.forEach {
             if(it.text.toString() != "") return it.text.toString().toDouble()
         }
         return 0.0
     }
-
     private fun determinateConversion(textsViews: Array<EditText>, btnPressed: Button): String {
 
         textsViews.forEach {
@@ -119,7 +112,6 @@ class MainActivity : AppCompatActivity() {
         }
         return ""
     }
-
     private fun setTextWatcher(editText: EditText, actionTextViews: Array<TextView>) {
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -136,14 +128,11 @@ class MainActivity : AppCompatActivity() {
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Acción a realizar antes de que se produzca un cambio en el texto del EditText
-
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
             }
         })
     }
-
     private fun calculatorGrades(grades: Double, conversion: String): String? {
         val decimalFormat = DecimalFormat("#.##")
         return when (conversion) {
