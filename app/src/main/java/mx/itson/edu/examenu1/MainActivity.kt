@@ -13,6 +13,9 @@ import android.widget.Toast
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
+
+    var grades: Double = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -22,12 +25,17 @@ class MainActivity : AppCompatActivity() {
         val btnF: Button = findViewById(R.id.btnGF)
         val btnK: Button = findViewById(R.id.btnGK)
         val btnBorrar: Button = findViewById(R.id.btnReset)
+        btnC.tag = "btnC"
+        btnF.tag = "btnF"
+        btnK.tag = "btnK"
 
         // Edit Texts
         val txtC: EditText = findViewById(R.id.etC)
         val txtF: EditText = findViewById(R.id.etF)
         val txtK: EditText = findViewById(R.id.etK)
-
+        txtC.tag = "txtC"
+        txtF.tag = "txtF"
+        txtK.tag = "txtK"
 
         setTextWatcher(txtC, arrayOf(txtF,txtK))
         setTextWatcher(txtF, arrayOf(txtC,txtK))
@@ -40,19 +48,31 @@ class MainActivity : AppCompatActivity() {
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
         }
-
+        val arrayTextsViews = arrayOf(txtC,txtF,txtK)
         btnC.setOnClickListener{
-           calcularGrados(txtC, arrayOf(txtF,txtK))
+            if(determinateNumberOfTxtUsed(arrayTextsViews) <= 2){
+                txtC.setText(calculatorGrades(getGrades(arrayTextsViews), determinateConversion(arrayTextsViews,btnC)))
+            } else {
+                Toast.makeText(applicationContext, "Presione el botón borrar para hacer otros calculos", Toast.LENGTH_LONG).show()
+            }
             hideKeyboard()
         }
 
         btnF.setOnClickListener{
-            calcularGrados(txtF, arrayOf(txtC,txtK))
+            if(determinateNumberOfTxtUsed(arrayTextsViews) <= 2){
+                txtF.setText(calculatorGrades(getGrades(arrayTextsViews), determinateConversion(arrayTextsViews,btnF)))
+            } else {
+                Toast.makeText(applicationContext, "Presione el botón borrar para hacer otros calculos", Toast.LENGTH_LONG).show()
+            }
             hideKeyboard()
         }
 
         btnK.setOnClickListener {
-            calcularGrados(txtK, arrayOf(txtC, txtF))
+            if(determinateNumberOfTxtUsed(arrayTextsViews) <= 2){
+                txtK.setText(calculatorGrades(getGrades(arrayTextsViews), determinateConversion(arrayTextsViews,btnK)))
+            } else {
+                Toast.makeText(applicationContext, "Presione el botón borrar para hacer otros calculos", Toast.LENGTH_LONG).show()
+            }
             hideKeyboard()
         }
 
@@ -66,7 +86,41 @@ class MainActivity : AppCompatActivity() {
             txtK.text.clear()
         }
     }
-    fun setTextWatcher(editText: EditText, actionTextViews: Array<TextView>) {
+
+    private fun determinateNumberOfTxtUsed(textsViews: Array<EditText>): Int{
+        var count = 0
+        textsViews.forEach {
+            if(it.text.toString() != "") count++
+        }
+        return count
+    }
+
+    private fun getGrades(textsViews: Array<EditText>):Double {
+        textsViews.forEach {
+            if(it.text.toString() != "") return it.text.toString().toDouble()
+        }
+        return 0.0
+    }
+
+    private fun determinateConversion(textsViews: Array<EditText>, btnPressed: Button): String {
+        var conversion = ""
+        textsViews.forEach {
+            if (it.text.toString() != "") {
+                when {
+                    it.tag == "txtC" && btnPressed.tag == "btnF" -> conversion = "C_to_F"
+                    it.tag == "txtC" && btnPressed.tag == "btnK" -> conversion = "C_to_K"
+                    it.tag == "txtF" && btnPressed.tag == "btnC" -> conversion = "F_to_C"
+                    it.tag == "txtF" && btnPressed.tag == "btnF" -> conversion = "C_to_K"
+                    it.tag == "txtK" && btnPressed.tag == "btnC" -> conversion = "K_to_C"
+                    it.tag == "txtK" && btnPressed.tag == "F" -> conversion = "K_to_F"
+                    else -> ""
+                }
+            }
+        }
+        return conversion
+    }
+
+    private fun setTextWatcher(editText: EditText, actionTextViews: Array<TextView>) {
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 // Acción a realizar después de que se haya producido un cambio en el texto del EditText
@@ -85,49 +139,27 @@ class MainActivity : AppCompatActivity() {
 
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
             }
         })
     }
 
-    fun calcularGrados(editText: EditText, actionTextViews: Array<TextView>){
-        var grados: Double = 0.0
-        var sucess: Boolean = true
-        try{
-            grados = editText.text.toString().toDouble()
-        }catch(e: Exception){
-            actionTextViews[1].text = ""
-            actionTextViews[0].text = ""
-            sucess = false
-            val toast = Toast.makeText(applicationContext, "Seleccione el grado correspondiente al que llenó para llenar los otros 2!", Toast.LENGTH_LONG)
-            toast.show()
-        }
-
-        if(sucess){
-            val decimalFormat = DecimalFormat("#.##")
-            when (editText.id) {
-                // Para cuando se llene los celsius
-                R.id.etC -> {
-                    // Calculamos Celsius a Fahrenheit
-                    actionTextViews[0].text = decimalFormat.format((grados * 1.8 + 32)).toString()
-                    // Calculamos Celsius a Kelvin
-                    actionTextViews[1].text = decimalFormat.format((grados + 273.15)).toString()
-                }
-                // Para cuando se llene los Fahrenheit
-                R.id.etF -> {
-                    // Calculamos Fahrenheit a Celsius
-                    actionTextViews[0].text = decimalFormat.format((grados - 32)/1.8).toString()
-                    // Calculamos Fahrenheit a Kelvin
-                    actionTextViews[1].text = decimalFormat.format(((5*(grados - 32))/9)+273.15).toString()
-                }
-                // Para cuando se llene los Kelvin
-                R.id.etK -> {
-                    // Calculamos Kelvin a Celsius
-                    actionTextViews[0].text = decimalFormat.format(grados - 273.15).toString()
-
-                    // Calculamos Kelvin a Fahrenheit
-                    actionTextViews[1].text = decimalFormat.format(((9*(grados - 273.15))/5)+32).toString()
-                }
-            }
+    private fun calculatorGrades(grades: Double, conversion: String): String? {
+        val decimalFormat = DecimalFormat("#.##")
+        return when (conversion) {
+            // Celsius a Fahrenheit
+            "C_to_F" -> decimalFormat.format((grades * 1.8 + 32))
+            // Celsius a Kelvin
+            "C_to_K" -> decimalFormat.format((grades + 273.15))
+            // Fahrenheit a Celsius
+            "F_to_C" -> decimalFormat.format((grades - 32) / 1.8)
+            // Fahrenheit a Kelvin
+            "F_to_K" -> decimalFormat.format(((5 * (grades - 32)) / 9) + 273.15)
+            // Kelvin a Celsius
+            "K_to_C" -> decimalFormat.format(grades - 273.15)
+            // Kelvin a Fahrenheit
+            "K_to_F" -> decimalFormat.format(((9 * (grades - 273.15)) / 5) + 32)
+            else -> ""
         }
     }
 }
